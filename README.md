@@ -1,4 +1,4 @@
-# 🏗️ BermGuard AI — Visión computacional para maquinaria y pretiles
+# 🏗️ Machinery Vision Tracker — Visión computacional para maquinaria y pretiles
 
 **Desarrollado en seis días · Dos métodos de visión computacional · Del diseño a la entrega integrada**
 
