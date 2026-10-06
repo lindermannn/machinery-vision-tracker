@@ -1,33 +1,29 @@
-# Ingeniería asistida por IA y MCP
+# AI-assisted engineering and MCP
 
-## Principio
+## Principle
 
-La IA se utilizó como acelerador de exploración, implementación, revisión y
-documentación; las decisiones que afectan seguridad, métricas y reproducibilidad
-se verificaron con código, fixtures, hashes o inspección humana.
+AI accelerated exploration, implementation, review, and documentation. Decisions affecting safety, metrics, and reproducibility were checked against code, fixtures, hashes, or human inspection.
 
-## Usos concretos
+## Concrete uses
 
-| Área | Asistencia | Control aplicado |
+| Area | Assistance | Applied control |
 |---|---|---|
-| Arquitectura | Comparación de pipelines YOLO-seg/SAM-2/tracker | Contratos y límites explícitos |
-| Geometría | Revisión de homografía, escala y perspectiva | Casos sintéticos y rechazo de extrapolación |
-| Tracking | Propuestas de Hungarian, Kalman y ciclo de vida | Cruces, oclusiones y detecciones faltantes |
-| Anotación | Propagación de máscaras con SAM-2 en Label Studio | Revisión humana y procedencia por máscara |
-| Automatización | Generación de scripts de empaquetado y validación | Ejecución literal en Docker y hashes |
-| Investigación | Búsqueda de referencias dimensionales y licencias | Fuentes registradas y supuestos declarados |
-| MCP | Control de herramientas, navegador y sesiones de trabajo | Acciones acotadas, sin publicar credenciales |
+| Architecture | YOLO-seg/SAM-2/tracker pipeline comparison | Explicit contracts and limitations |
+| Geometry | Homography, scale, and perspective review | Synthetic cases and rejection of extrapolation |
+| Tracking | Hungarian, Kalman, and lifecycle proposals | Crossings, occlusions, and missing detections |
+| Annotation | SAM-2 mask propagation in Label Studio | Human review and per-mask provenance |
+| Automation | Packaging and validation scripts | Actual Docker execution and hashes during the original delivery |
+| Research | Dimensional references and licensing | Recorded sources and declared assumptions |
+| MCP | Tool, browser, and work-session control | Scoped actions without publishing credentials |
 
-## Reglas de seguridad
+## Safety rules
 
-- Una respuesta de un agente no se considera evidencia por sí sola.
-- Los resultados se validan contra archivos, comandos, tests o imágenes.
-- Las propuestas de SAM-2 no se mezclan con máscaras humanas sin marcar su origen.
-- No se publican datos privados para hacer la demo más convincente.
-- Un resultado no concluyente se mantiene como N/D.
+- An agent's response is not evidence by itself.
+- Results are checked against files, commands, tests, or images.
+- SAM-2 proposals are distinguished from human-drawn masks by provenance.
+- Private data is not published to make a demo more convincing.
+- Inconclusive results remain N/D (not available).
 
-## Trabajo multiagente
+## Multi-agent work
 
-Cuando se usaron agentes distintos, cada responsabilidad se documentó y el
-resultado se integró sólo después de revisar interfaces, dependencias y pruebas.
-Esto permite explicar qué aceleró la IA y qué permaneció bajo control humano.
+When different agents were used, responsibilities were documented and results were integrated only after reviewing interfaces, dependencies, and tests. This distinguishes AI acceleration from human accountability.

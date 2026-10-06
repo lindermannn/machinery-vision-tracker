@@ -1,12 +1,9 @@
-# Entradas propias
+# Bring your own inputs
 
-Los videos completos no se distribuyen. Para ejecutar el proyecto, utiliza videos
-propios o material autorizado y checkpoints obtenidos por separado.
+Full videos are not distributed. Use your own videos or authorized material and obtain checkpoints separately.
 
 ```bash
 python main.py --method 2 --input examples/videos --output outputs/demo --weights models/yoloseg_maquinaria_train_v2.pt --device cpu
 ```
 
-Crea `examples/videos` localmente y coloca allí tus clips. El checkpoint debe ser
-compatible con las clases de maquinaria del proyecto. Sin máscaras externas del
-pretil, el Método 2 declara N/D; no ejecuta SAM2 automáticamente.
+Create `examples/videos` locally and place your clips there. The checkpoint must match the project's machinery classes. Without external berm masks, Method 2 reports N/D; it does not execute SAM2 automatically.

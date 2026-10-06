@@ -1,13 +1,9 @@
-# Limitaciones que deben permanecer visibles
+# Limitations that must remain visible
 
-- La altura y las distancias de Método 2 son estimaciones si no existe
-  calibración externa defendible.
-- SAM-2 propaga una indicación; no reemplaza un detector entrenado del pretil.
-- Las máscaras aceptadas desde propagación no equivalen automáticamente a verdad
-  humana.
-- La validación con frames del mismo video no mide generalización a otra cámara.
-- Los videos sintéticos sirven para probar contratos, no para declarar precisión
-  real en faena.
-- La transición día/noche no debe confundirse con un movimiento de cámara.
-- La ausencia de evidencia debe producir N/D, no una alerta falsa ni un verde
-  tranquilizador.
+- Method 2 height and distance outputs are estimates without defensible external calibration.
+- SAM-2 propagates a prompt; it does not replace a trained berm detector.
+- Accepted propagated masks are not automatically independent human ground truth.
+- Validation using frames from the same video does not measure generalization to another camera.
+- Synthetic videos support contract testing, not claims of real-site accuracy.
+- Day/night transitions must not be confused with camera movement.
+- Missing evidence should produce N/D, not a false alert or an unsupported green status.

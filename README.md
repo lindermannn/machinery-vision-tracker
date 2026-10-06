@@ -1,255 +1,255 @@
-# 🏗️ Machinery Vision Tracker — Visión computacional para maquinaria y pretiles
+# 🏗️ Machinery Vision Tracker — Computer vision for mining machinery and safety berms
 
-**Desarrollado en seis días · Dos métodos de visión computacional · Del diseño a la entrega integrada**
+**Built in six days · Two computer vision methods · From design to integrated delivery**
 
-Pipeline de visión computacional para monitorear maquinaria minera y estimar la altura de pretiles. Esta presentación destaca el **Método 2**, con capturas de sus salidas sobre video sintético generado por IA.
+A computer vision pipeline for monitoring mining machinery and estimating safety berm height. This presentation highlights **Method 2**, with screenshots of its outputs on AI-generated synthetic video.
 
-![Camión y bulldozer identificados, proximidad estimada y perfil del pretil](docs/images/method2-video02-seeded-05s.png)
+![Detected truck and bulldozer, estimated proximity, and berm profile](docs/images/method2-video02-seeded-05s.png)
 
-*Video 02, segundo 5, corrida con máscaras aprobadas del pretil. Los metros y el veredicto del overlay son estimaciones bajo supuestos, no topografía ni certificación de seguridad.*
+*Video 02, second 5, from the run using approved berm masks. Overlay measurements and verdicts are assumption-based estimates, not survey measurements or safety certification. Original screenshots and plots retain their Spanish labels.*
 
 ---
 
-## ✨ Qué hace
+## ✨ Features
 
-- Detecta maquinaria con YOLO11n-seg ajustado con anotaciones propias.
-- Asocia detecciones entre cuadros mediante tracking con asignación global.
-- Delimita el pretil a partir de máscaras aprobadas y propagación temporal.
-- Estima altura y proximidad con geometría de cámara, referencias e intervalos.
-- Expone los casos sin evidencia como N/D, sin confundirlos con condiciones seguras.
-- Genera video anotado, series CSV, gráficos y metadata de la corrida.
+- Detects machinery using YOLO11n-seg fine-tuned on custom annotations.
+- Associates detections across frames through tracking with global assignment.
+- Delineates the berm using approved masks and temporal propagation.
+- Estimates height and proximity using camera geometry, dimensional references, and intervals.
+- Reports insufficient evidence as N/D (not available), rather than treating it as a safe condition.
+- Produces annotated video, CSV series, plots, and run metadata.
 
-## 🎬 El Método 2 en acción
+## 🎬 Method 2 in action
 
-| Maquinaria y pretil — segundo 3 | Escena nocturna — segundo 1 |
+| Machinery and berm — second 3 | Night scene — second 1 |
 |---|---|
-| ![Bulldozer y límites del pretil de día](docs/images/method2-video02-seeded-03s.png) | ![Camión y referencia del pretil de noche](docs/images/method2-video02-seeded-01s.png) |
+| ![Bulldozer and berm boundaries in daylight](docs/images/method2-video02-seeded-03s.png) | ![Truck and berm reference at night](docs/images/method2-video02-seeded-01s.png) |
 
-Capturas del mismo video, sin retoques al dibujo original. La escena nocturna corresponde a una corrida con máscaras externas aprobadas: no demuestra reconocimiento automático del pretil en oscuridad.
+Screenshots from the same video, with the original overlays unchanged. The night scene comes from a run using approved external masks: it does not demonstrate automatic berm recognition in darkness.
 
-## 🖼️ El overlay, función por función
+## 🖼️ Overlay breakdown
 
-### Lo que identifica la cámara
+### What the camera identifies
 
-| Elemento | Qué muestra |
+| Element | Meaning |
 |---|---|
-| Caja y clase | Detección de maquinaria |
-| ID | Identidad asignada por el tracker, no identidad verificada manualmente |
-| Líneas naranja y azul | Límites del pretil en la corrida con máscaras aprobadas |
+| Bounding box and class | Machinery detection |
+| ID | Tracker-assigned identity, not a manually verified identity |
+| Orange and blue lines | Berm boundaries in the run using approved masks |
 
-### Lo que estima la geometría
+### What the geometry estimates
 
-| Elemento | Qué muestra |
+| Element | Meaning |
 |---|---|
-| Altura e intervalo | Estimación del pretil e incertidumbre declarada |
-| Línea entre vehículos | Proximidad estimada para ese par |
-| Rojo / ámbar / verde | Umbrales del ejercicio: menos de 10 m / hasta 20 m / más de 20 m |
-| Plomo / N/D | Evidencia o geometría insuficiente; no significa seguridad |
+| Height and interval | Estimated berm height and stated uncertainty |
+| Line between vehicles | Estimated proximity for that pair |
+| Red / amber / green | Exercise thresholds: below 10 m / up to 20 m / above 20 m |
+| Gray / N/D | Insufficient evidence or geometry; does not imply safety |
 
-### Lo que queda registrado
+### What is recorded
 
-| Artefacto | Qué permite revisar |
+| Artifact | What it supports |
 |---|---|
-| Serie de altura | Variación de estimaciones durante el clip |
-| Matriz de distancias | Menor distancia conservadora disponible por par de IDs |
-| Distribución espacial | Recorridos observados en coordenadas de imagen |
+| Height series | Inspection of estimate variation during the clip |
+| Distance matrix | Lowest available conservative distance per ID pair |
+| Spatial distribution | Observed trajectories in image coordinates |
 
-## ⚙️ Cómo funciona
+## ⚙️ How it works
 
 ```text
-Video → YOLO11n-seg ajustado → vehículos → tracking → geometría por escena
-                                                            ↓
-Semilla aprobada → SAM 2.1 / propagación → pretil → fusión y diagnóstico
-                                                            ↓
-                              Video con overlay · CSV · gráficos · metadata
+Video → Fine-tuned YOLO11n-seg → vehicles → tracking → scene-specific geometry
+                                                                  ↓
+Approved seed → SAM 2.1 / propagation → berm → fusion and diagnostics
+                                                                  ↓
+                                      Annotated video · CSV · plots · metadata
 ```
 
-| Componente | Función |
+| Component | Role |
 |---|---|
-| YOLO11n-seg | Detector especializado ajustado con anotaciones propias |
-| SAM 2.1 Hiera Small | Segmentación promptable y propagación temporal; requiere semilla |
-| Tracking | Asignación húngara, movimiento y ciclo de vida ante detecciones faltantes |
-| Geometría | Referencias dimensionales, intervalos y compuertas de validez por escena |
-| Diagnóstico | Separación entre observación, estimación y ausencia de evidencia |
-| Validación | Fixtures, revisión visual, contratos, Docker offline y hashes |
+| YOLO11n-seg | Specialized detector fine-tuned on custom annotations |
+| SAM 2.1 Hiera Small | Promptable segmentation and temporal propagation; requires a seed |
+| Tracking | Hungarian assignment, motion, and lifecycle handling for missing detections |
+| Geometry | Dimensional references, intervals, and scene-specific validity gates |
+| Diagnostics | Separates observations, estimates, and missing evidence |
+| Validation | Fixtures, visual review, contracts, offline Docker checks, and hashes |
 
-También se implementó un Método 1 independiente: extracción fotométrica del pretil con memoria diurna y Grounding DINO Tiny para vehículos.
+An independent Method 1 was also implemented: photometric berm extraction with daylight memory and Grounding DINO Tiny for vehicles.
 
-## 📐 De píxeles a metros: altura del pretil
+## 📐 From pixels to meters: berm height
 
-El Método 2 no convierte todos los píxeles con una escala global fija. El reporte final y el módulo de altura documentan este procedimiento:
+Method 2 does not convert every pixel using a single fixed global scale. The final report and height module document the following procedure:
 
-1. **Delimitar el pretil:** partir de una máscara aprobada y de su propagación temporal. En cada columna válida se obtiene el borde superior (cresta) y el inferior (pie).
-2. **Medir el grosor visible:** `fila_pie − fila_cresta + 1`, en píxeles. Se excluyen columnas bloqueadas por maquinaria cuando se proporciona su máscara dinámica y se toma la mediana del grosor y de la fila del pie.
-3. **Ajustar la cámara por escena:** usar el tamaño aparente de maquinaria y las dimensiones de clase declaradas. El reporte utiliza camión de 6,6 × 13,7 × 8,29 m y bulldozer de 4,5 × 10,9 × 6,7 m, con incertidumbres de 12 % y 15 %, respectivamente. Son referencias de clase, no dimensiones medidas de cada vehículo sintético.
-4. **Convertir a metros:** aplicar el horizonte y la altura de cámara estimados para ese segmento:
+1. **Delineate the berm:** start from an approved mask and its temporal propagation. Each valid column provides the upper boundary (crest) and lower boundary (base).
+2. **Measure visible thickness:** `base_row − crest_row + 1`, in pixels. Columns occluded by machinery are excluded when a dynamic mask is supplied; the median thickness and base row are used.
+3. **Fit the camera per scene:** use apparent machinery size and declared class dimensions. The report uses a truck reference of 6.6 × 13.7 × 8.29 m and a bulldozer reference of 4.5 × 10.9 × 6.7 m, with uncertainties of 12% and 15%, respectively. These are class references, not measured dimensions of each synthetic vehicle.
+4. **Convert to meters:** apply the estimated horizon and camera height for that segment:
 
 ```text
-altura_pretil_m = grosor_px × altura_cámara_m / (fila_pie_px − horizonte_px)
+berm_height_m = thickness_px × camera_height_m / (base_row_px − horizon_px)
 ```
 
-El FOV supuesto se cancela en esta expresión de altura; sí afecta las distancias entre vehículos. En la corrida con máscaras del video 02, el metadata registra horizonte **274,49 px** y altura de cámara estimada **10,63 m**. No son parámetros levantados en terreno.
+The assumed FOV cancels out in this height expression; it does affect distances between vehicles. In the masked run for video 02, metadata records a horizon of **274.49 px** and an estimated camera height of **10.63 m**. These are not field-surveyed parameters.
 
-5. **Publicar incertidumbre y estado:** calcular los extremos usando los límites del horizonte y la incertidumbre de altura de cámara. Las compuertas rechazan soporte insuficiente, saltos de área o grosor y geometría inválida, en vez de dibujar una medición engañosa.
+5. **Report uncertainty and status:** calculate bounds using horizon limits and camera-height uncertainty. Validity gates reject insufficient support, area or thickness jumps, and invalid geometry instead of displaying a misleading measurement.
 
-### Ejemplo de la misma corrida mostrada
+### Example from the displayed run
 
-La primera fila del CSV registra **42 px** de grosor y **3,134 m**, con intervalo **2,489–3,876 m**. Al final, la fila 239 registra **37 px** y **2,685 m**, con intervalo **2,137–3,315 m**. Son estimaciones por cuadro, no cambios físicos comprobados del pretil.
+The first CSV row records **42 px** of thickness and **3.134 m**, with an interval of **2.489–3.876 m**. At the end, row 239 records **37 px** and **2.685 m**, with an interval of **2.137–3.315 m**. These are per-frame estimates, not verified physical changes in the berm.
 
-El código compara el intervalo con un umbral del ejercicio basado en una rueda de referencia de 3,596 m: **1,798 m** para el criterio de media rueda o **2,397 m** para dos tercios. Devuelve `cumple` si el límite inferior supera el umbral, `por_debajo` si el superior queda por debajo y `no_concluyente` si el intervalo lo cruza. El criterio normativo seleccionado es un supuesto del proyecto; el overlay no certifica cumplimiento legal en terreno.
+The code compares the interval with an exercise threshold based on a 3.596 m reference wheel: **1.798 m** for the half-wheel criterion or **2.397 m** for two-thirds. It returns `cumple` (meets threshold) when the lower bound exceeds the threshold, `por_debajo` (below threshold) when the upper bound is below it, and `no_concluyente` (inconclusive) when the interval crosses it. The selected criterion is a project assumption; the overlay does not certify legal compliance in the field.
 
-**No mezclar versiones:** los 3,60 m e intervalo 2,74–4,23 m del video 02 en la sección 5.4 del benchmark corresponden a la corrida del sprint 18, no a esta salida integrada con máscaras. Los ejemplos de arriba proceden del CSV que acompaña estas imágenes.
+**Do not mix runs:** the 3.60 m estimate and 2.74–4.23 m interval for video 02 in benchmark section 5.4 belong to the sprint 18 run, not this integrated masked output. The examples above come from the CSV accompanying these images.
 
-## 📈 Resultados gráficos del video 02
+## 📈 Video 02 plots
 
-Son los archivos originales de la misma corrida con máscaras aprobadas; no se recalcularon ni se retocaron.
+These are original files from the same run using approved masks; they were neither recalculated nor retouched.
 
-### Altura visible del pretil en el tiempo
+### Visible berm height over time
 
-![Serie de altura estimada del pretil del video 02](docs/images/video02-berm_height_over_time.png)
+![Estimated berm height series for video 02](docs/images/video02-berm_height_over_time.png)
 
-Cada punto representa una altura estimada disponible en su instante. Permite inspeccionar variación y continuidad durante el clip. El gráfico muestra valores nominales, **no la banda de incertidumbre**: los límites están en `berm_height_series.csv`. La variación visual no demuestra un derrumbe ni exactitud topográfica.
+Each point represents an available height estimate at that instant, supporting inspection of variation and continuity during the clip. The plot shows nominal values, **not an uncertainty band**: bounds are stored in `berm_height_series.csv`. Visual variation does not establish a collapse or survey-level accuracy.
 
-### Proximidad y distribución espacial
+### Proximity and spatial distribution
 
-| Distancias mínimas conservadoras | Recorridos observados en imagen |
+| Conservative minimum distances | Observed image-space trajectories |
 |---|---|
-| ![Matriz de distancias mínimas entre IDs](docs/images/video02-minimum_distance_matrix.png) | ![Trayectorias de puntos de contacto en píxeles](docs/images/video02-vehicle_spatial_distribution.png) |
+| ![Minimum-distance matrix between IDs](docs/images/video02-minimum_distance_matrix.png) | ![Contact-point trajectories in pixels](docs/images/video02-vehicle_spatial_distribution.png) |
 
-La **matriz** resume la menor distancia conservadora disponible entre pares de IDs durante el video. Las celdas blancas no indican seguridad: incluyen la diagonal y pares sin una distancia válida disponible. No representa distancias simultáneas de todos los vehículos.
+The **matrix** summarizes the lowest available conservative distance between ID pairs during the video. White cells do not indicate safety: they include the diagonal and pairs without a valid distance. It does not represent simultaneous distances between all vehicles.
 
-La **distribución espacial** dibuja el punto de contacto observado de cada track en coordenadas de imagen, **en píxeles, no metros**. Los IDs identifican seguimientos del algoritmo; sin identidades anotadas no equivalen necesariamente a siete máquinas distintas.
+The **spatial distribution** plots each track's observed contact point in image coordinates, **in pixels, not meters**. IDs identify algorithmic tracks; without annotated identities, they do not necessarily represent seven distinct machines.
 
-## ⏱️ Desarrollo en seis días
+## ⏱️ Built in six days
 
-Entre el **6 y el 11 de septiembre de 2026** se desarrollaron dos enfoques: un Método 1 con extracción clásica y Grounding DINO Tiny, y un Método 2 con YOLO11n-seg y SAM2. El trabajo incluyó anotación asistida, entrenamiento, tracking, geometría, visualización, pruebas y empaquetado. Esta presentación se centra en el Método 2.
+Between **September 6 and 11, 2026**, two approaches were developed: Method 1 with classical extraction and Grounding DINO Tiny, and Method 2 with YOLO11n-seg and SAM2. The work included assisted annotation, training, tracking, geometry, visualization, testing, and packaging. This presentation focuses on Method 2.
 
-| Fecha | Hitos documentados |
+| Date | Documented milestones |
 |---|---|
-| 6 de septiembre | Definición del alcance, contratos de ejecución y primer pipeline clásico sobre los cuatro videos |
-| 7 de septiembre | Comparación inicial de enfoques, integración de Grounding DINO y revisión visual que detectó problemas pese a las pruebas en verde |
-| 8 de septiembre | Memoria diurna del pretil, estados de evidencia y verificación del paquete del Método 1 desde su extracción |
-| 9 de septiembre | Refinamiento del Método 1 y rediseño del Método 2 con SAM2, YOLO-seg y desarrollo por sprints |
-| 10 de septiembre | Anotación asistida con revisión humana en Label Studio; mejoras de altura y calibración del Método 1 |
-| 11 de septiembre | Entrenamientos de YOLO11n-seg, integración de tracking y geometría del Método 2, corrección de la evaluación de máscaras, reporte y entrega |
+| September 6 | Scope definition, execution contracts, and initial classical pipeline across the four videos |
+| September 7 | Initial approach comparison, Grounding DINO integration, and visual review identifying issues despite passing tests |
+| September 8 | Daylight berm memory, evidence states, and verification of the extracted Method 1 package |
+| September 9 | Method 1 refinement and Method 2 redesign with SAM2, YOLO-seg, and sprint-based development |
+| September 10 | Assisted annotation with human review in Label Studio; Method 1 height and calibration improvements |
+| September 11 | YOLO11n-seg training, Method 2 tracking and geometry integration, mask-evaluation correction, reporting, and delivery |
 
-El plazo describe el desarrollo de la prueba técnica, no una validación de producción. La reorganización de archivos y esta presentación del portfolio se realizaron posteriormente.
+This timeline describes development of the technical exercise, not production validation. File reorganization and this portfolio presentation were completed later.
 
-## 🛠️ Anotación y decisiones de ingeniería
+## 🛠️ Annotation and engineering decisions
 
-Según la documentación de la entrega:
+As documented in the delivery materials:
 
-- Definí la arquitectura del Método 2 y organicé el desarrollo en sprints.
-- Construí y revisé el flujo de anotación asistida: SAM2 propone; Label Studio permite aceptar, corregir o dibujar.
-- Distinguí máscaras humanas de propuestas aprobadas, lo que obligó a corregir la evaluación nocturna.
-- Propuse dimensiones de maquinaria como referencias geométricas.
-- Rechacé resultados visualmente incorrectos aunque las pruebas unitarias pasaran.
-- Integré IA y MCP con revisión humana, trazabilidad y comprobación de artefactos.
+- Designed the Method 2 architecture and organized development into sprints.
+- Built and reviewed the assisted annotation workflow: SAM2 proposes; Label Studio supports accepting, correcting, or drawing masks.
+- Distinguished human-drawn masks from approved proposals, requiring a correction to the night evaluation.
+- Proposed machinery dimensions as geometric references.
+- Rejected visually incorrect outputs even when unit tests passed.
+- Integrated AI and MCP with human review, traceability, and artifact verification.
 
-## 🚀 Instalación y ejecución
+## 🚀 Installation and usage
 
-El código de ambos métodos está disponible bajo **AGPL-3.0**. Los videos completos,
-pesos y bases de anotación no se incluyen; utiliza material propio autorizado.
+Both methods' source code is available under **AGPL-3.0**. Full videos, weights,
+and annotation databases are not included; use your own authorized material.
 
 ```bash
 python -m venv .venv
-# Activa el entorno según tu sistema operativo.
+# Activate the environment for your operating system.
 python -m pip install -r requirements.txt
 python main.py --help
 ```
 
-### Método 2 — YOLO-seg y geometría
+### Method 2 — YOLO-seg and geometry
 
-Necesita un checkpoint de segmentación compatible con las clases de maquinaria:
+Requires a segmentation checkpoint compatible with the machinery classes:
 
 ```bash
 python main.py --method 2 --input examples/videos --output outputs/method2 --weights models/yoloseg_maquinaria_train_v2.pt --device cpu
 ```
 
-Crea la carpeta de entrada y coloca tus clips localmente. Para GPU usa `--device 0`
-con una instalación de PyTorch compatible. Las máscaras externas del pretil son
-opcionales mediante `--berm-mask-root`; sin ellas queda en N/D. El runner no
-ejecuta SAM2 automáticamente.
+Create the input folder and place your clips there locally. For GPU execution,
+use `--device 0` with a compatible PyTorch installation. External berm masks
+are optional through `--berm-mask-root`; without them, the berm remains N/D.
+The runner does not execute SAM2 automatically.
 
-### Método 1 — Grounding DINO y pretil clásico
+### Method 1 — Grounding DINO and classical berm extraction
 
-El script siguiente descarga el detector público y verifica su revisión y hash;
-la descarga requiere conexión y espacio para sus pesos:
+The following script downloads the public detector and verifies its revision
+and hash. Downloading requires network access and disk space for the weights:
 
 ```bash
 python scripts/fetch_semantic_detector.py --destination models/grounding-dino-tiny
 python main.py --method 1 --input examples/videos --output outputs/method1 --detector-model-dir models/grounding-dino-tiny
 ```
 
-### Pruebas
+### Tests
 
 ```bash
 python -m unittest discover -s tests
 python scripts/validate_publication.py
 ```
 
-Las pruebas incluyen fixtures generados durante la ejecución y no necesitan los
-videos originales. El segundo comando revisa higiene de publicación, no precisión
-del detector. El Dockerfile permite construir el entorno; no incluye modelos.
+Tests include fixtures generated at runtime and do not require the original
+videos. The second command checks publication hygiene, not detector accuracy.
+The Dockerfile supports building the environment; models are not included.
 
 ## 🧪 Training your own segmentation model
 
-El detector de maquinaria se ajustó con anotaciones aprobadas en Label Studio. SAM2 ayudó a generar propuestas de máscaras para revisión humana; **no se entrenó SAM2 como detector automático de pretiles**.
+The machinery detector was fine-tuned using annotations approved in Label Studio. SAM2 helped generate mask proposals for human review; **SAM2 was not trained as an automatic berm detector**.
 
-Hubo dos entrenamientos de YOLO11n-seg. El Método 2 usa `train_v2`, inicializado desde el checkpoint `best.pt` de `train_v1`, en lugar de entrenar desde cero.
+YOLO11n-seg was trained twice. Method 2 uses `train_v2`, initialized from the `best.pt` checkpoint of `train_v1`, rather than training from scratch.
 
-Este comando expresa los parámetros principales registrados en `train_v2/args.yaml`, con rutas relativas de ejemplo; requiere disponer del checkpoint anterior y de un dataset de segmentación propio. No reproduce por sí solo todo el entorno original.
+This command expresses the main parameters recorded in `train_v2/args.yaml`, using example relative paths. It requires the previous checkpoint and your own segmentation dataset; it does not reproduce the entire original environment by itself.
 
 ```bash
 yolo segment train model=weights/train_v1/best.pt data=dataset/dataset.yaml epochs=30 patience=10 imgsz=960 batch=4 seed=42 device=0 workers=2 optimizer=auto deterministic=True project=runs/segment name=train_v2
 ```
 
-| Parámetro documentado | Valor |
+| Documented parameter | Value |
 |---|---|
-| Imágenes de entrenamiento / validación | 70 / 16 |
-| Clases | Camion_Mina, Bulldozer, Cargador_Frontal, Excavadora, Otra_Maquinaria |
-| Épocas / paciencia | 30 / 10 |
-| Tamaño de entrada / lote | 960 px / 4 |
-| Semilla | 42 |
-| Backbone congelado | No: `freeze: null` |
-| Optimizador | Automático |
+| Training / validation images | 70 / 16 |
+| Classes (original labels) | Camion_Mina, Bulldozer, Cargador_Frontal, Excavadora, Otra_Maquinaria |
+| Epochs / patience | 30 / 10 |
+| Input size / batch | 960 px / 4 |
+| Seed | 42 |
+| Frozen backbone | No: `freeze: null` |
+| Optimizer | Automatic |
 
-A diferencia del ejemplo de ajedrez, aquí no se documenta un backbone congelado ni una política explícita de learning rate reducido. Para adaptar el detector a otra faena, se necesita un dataset propio revisado y una validación separada por video o cámara: el experimento original comparte videos entre entrenamiento y validación y **no demuestra generalización**.
+Unlike the chess example, this project does not document a frozen backbone or an explicit reduced-learning-rate policy. Adapting the detector to another site requires a reviewed custom dataset and validation split by video or camera: the original experiment shares videos between training and validation and **does not demonstrate generalization**.
 
-## 💡 Aprendizajes
+## 💡 Lessons learned
 
-- **Pasar pruebas no basta:** resultados con tests en verde fueron rechazados por revisión visual. Los contratos de código y la inspección del video detectan problemas distintos.
-- **Una propuesta aprobada no es una etiqueta independiente:** distinguir máscaras dibujadas a mano de las generadas por SAM2 evitó evaluar el modelo contra sus propias predicciones y obligó a corregir la evaluación nocturna.
-- **Segmentar no es reconocer:** SAM2 sigue lo que se le indica, pero no identifica automáticamente el pretil de una escena nueva. La semilla es una dependencia que debe quedar explícita.
-- **La memoria necesita límites:** conservar una referencia diurna puede ayudar de noche, pero trasladarla después de un cambio de escena produce geometría incorrecta. Hay que registrar su origen y cuándo deja de ser válida.
-- **Los metros requieren supuestos defendibles:** referencias dimensionales, perspectiva e incertidumbre importan más que una conversión global de píxeles. Sin calibración externa, el resultado sigue siendo una estimación.
-- **N/D también es un resultado útil:** cuando la geometría falla, declarar incertidumbre es preferible a mostrar un verde que sugiera seguridad sin evidencia.
-- **El tracking no se valida contando IDs:** más identificadores pueden representar fragmentación, no más vehículos. Se necesitan trayectorias anotadas para medir su calidad.
-- **Un dataset pequeño puede dar métricas engañosas:** repartir cuadros de los mismos videos entre entrenamiento y validación no demuestra rendimiento en otra cámara o faena.
-- **El material sintético condiciona los resultados:** los clips comprimen el tiempo, tienen oclusiones rápidas, cambios abruptos de luz y camiones que se transforman, aparecen de la nada o cambian de apariencia entre cuadros. Esas discontinuidades pueden romper un seguimiento sin corresponder a un movimiento físico real; no deben atribuirse automáticamente al detector o al tracker.
-- **La IA acelera, la evidencia decide:** anotación asistida, agentes y MCP ayudaron a construir y revisar el sistema; las decisiones finales se contrastaron con código, imágenes, pruebas y procedencia.
+- **Passing tests is not enough:** outputs with passing tests were rejected during visual review. Code contracts and video inspection uncover different problems.
+- **An approved proposal is not an independent label:** distinguishing hand-drawn masks from SAM2-generated ones prevented evaluation against the model's own predictions and required correcting the night evaluation.
+- **Segmentation is not recognition:** SAM2 follows a prompt but does not automatically identify a berm in a new scene. Its seed dependency must be explicit.
+- **Memory needs boundaries:** retaining a daylight reference can help at night, but transferring it after a scene change produces incorrect geometry. Its origin and validity must be tracked.
+- **Meters require defensible assumptions:** dimensional references, perspective, and uncertainty matter more than a global pixel conversion. Without external calibration, the result remains an estimate.
+- **N/D is a useful result:** when geometry fails, declaring uncertainty is preferable to showing green without supporting evidence.
+- **Tracking quality is not an ID count:** more identifiers can indicate fragmentation rather than more vehicles. Annotated trajectories are needed to measure quality.
+- **Small datasets can produce misleading metrics:** splitting frames from the same videos between training and validation does not demonstrate performance on another camera or site.
+- **Synthetic material shapes the results:** clips compress time and contain fast occlusions, abrupt lighting changes, and trucks that morph, appear suddenly, or change appearance between frames. These discontinuities can break tracking without corresponding to real physical motion; they should not automatically be attributed to the detector or tracker.
+- **AI accelerates; evidence decides:** assisted annotation, agents, and MCP helped build and review the system; final decisions were checked against code, images, tests, and provenance.
 
-## ⚠️ Límites del experimento
+## ⚠️ Experimental limitations
 
-Cuatro videos sintéticos, aproximadamente 40 segundos y 1.022 cuadros. De 42 máscaras aprobadas del pretil, sólo 11 se dibujaron a mano. Las propuestas del modelo no se consideran automáticamente verdad de terreno.
+Four synthetic videos, approximately 40 seconds and 1,022 frames. Of 42 approved berm masks, only 11 were hand-drawn. Model proposals are not automatically considered ground truth.
 
-**Condiciones del material:** videos generados por IA con acción y transiciones aceleradas, oclusiones rápidas y *morphing* de maquinaria, incluyendo apariciones repentinas. El corpus documentado tiene 24–30 FPS nominales, pero pocos cuadros para describir cambios tan comprimidos: no equivale a observar esos movimientos a velocidad natural. La oscuridad y la compresión también reducen la evidencia visual. Estos resultados describen el comportamiento sobre ese material, no una validación con cámaras reales en faena.
+**Source conditions:** AI-generated videos with accelerated action and transitions, fast occlusions, and machinery *morphing*, including sudden appearances. The documented corpus has nominal rates of 24–30 FPS but few frames to describe such compressed changes; it is not equivalent to observing those movements at natural speed. Darkness and compression further reduce visual evidence. These results describe behavior on this material, not validation with real mining-site cameras.
 
-- La validación de YOLO comparte videos con el entrenamiento: no demuestra generalización.
-- No hay verdad de terreno de identidades ni distancias medidas.
-- SAM2 requiere semilla; un video nuevo sin ella deja el pretil en N/D.
-- La memoria nocturna falla en algunos casos documentados y no está validada de forma general.
-- Los metros dependen de referencias y FOV supuesto, sin calibración externa.
-- Las capturas seleccionadas explican la salida; no son una evaluación completa ni evidencia de producción.
+- YOLO validation shares videos with training: it does not demonstrate generalization.
+- There is no ground truth for identities or measured distances.
+- SAM2 requires a seed; a new video without one leaves the berm as N/D.
+- Night memory fails in some documented cases and has not been generally validated.
+- Metric estimates depend on references and assumed FOV, without external calibration.
+- Selected screenshots explain the outputs; they are neither a complete evaluation nor production evidence.
 
-## 📚 Documentación
+## 📚 Documentation
 
-- [Plan de publicación](PUBLICATION_PLAN.md)
-- [Ingeniería asistida por IA](AI_ASSISTED_ENGINEERING.md)
-- [Mapa de procedencia](docs/PROVENANCE_MAP.md)
-- [Limitaciones y honestidad experimental](docs/LIMITATIONS.md)
-- [Auditoría antes del primer commit](docs/PRE_PUBLISH_AUDIT.md)
+- [Publication plan](PUBLICATION_PLAN.md)
+- [AI-assisted engineering](AI_ASSISTED_ENGINEERING.md)
+- [Provenance map](docs/PROVENANCE_MAP.md)
+- [Limitations and experimental transparency](docs/LIMITATIONS.md)
+- [Pre-publication audit](docs/PRE_PUBLISH_AUDIT.md)
 
 ## 🙏 Built with
 
-[Ultralytics YOLO11](https://github.com/ultralytics/ultralytics) · [SAM 2.1](https://github.com/facebookresearch/sam2) · [PyTorch](https://pytorch.org/) · [OpenCV](https://opencv.org/) · [SciPy](https://scipy.org/) (asignación húngara) · [NumPy](https://numpy.org/) · [Label Studio](https://labelstud.io/) · [Docker](https://www.docker.com/)
+[Ultralytics YOLO11](https://github.com/ultralytics/ultralytics) · [SAM 2.1](https://github.com/facebookresearch/sam2) · [PyTorch](https://pytorch.org/) · [OpenCV](https://opencv.org/) · [SciPy](https://scipy.org/) (Hungarian assignment) · [NumPy](https://numpy.org/) · [Label Studio](https://labelstud.io/) · [Docker](https://www.docker.com/)

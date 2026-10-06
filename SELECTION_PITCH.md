@@ -1,12 +1,7 @@
-# Resumen para selección técnica
+# Technical portfolio summary
 
-En seis días se construyeron dos métodos de visión para vehículos mineros y
-pretiles, con anotación asistida, tracking, geometría, gráficos y validación.
-El código propio se publica bajo AGPL-3.0, con pruebas y configuración.
+Two computer vision methods for mining vehicles and safety berms were built in six days, including assisted annotation, tracking, geometry, plots, and validation. Custom source code is published under AGPL-3.0, with tests and configuration.
 
-El material de desarrollo fue sintético y acelerado, con oclusiones rápidas y
-morphing. No se declara generalización a cámaras reales ni certificación de
-seguridad. Los metros son estimaciones con supuestos documentados.
+Development footage was synthetic and accelerated, with fast occlusions and morphing. Generalization to real cameras and safety certification are not claimed. Metric outputs are estimates based on documented assumptions.
 
-La aportación es integrar y revisar los componentes, distinguir observación de
-estimación y corregir resultados visualmente erróneos aunque pasen tests.
+The engineering contribution is integrating and reviewing the components, separating observations from estimates, and correcting visually incorrect outputs even when tests pass.

@@ -1,16 +1,15 @@
-# Auditoría previa a publicación
+# Pre-publication audit
 
-## Orden
+## Sequence
 
-1. Ejecutar `scripts/validate_publication.py`.
-2. Revisar manualmente cada coincidencia de secreto o ruta privada.
-3. Escanear el historial Git si ya existe.
-4. Confirmar que no se incluyeron datos de la prueba ni pesos sin licencia.
-5. Si se añade código ejecutable, ejecutar sus tests desde una instalación limpia.
-6. Revisar README, licencia y contacto de seguridad.
-7. Crear tag de selección sólo después de la revisión.
+1. Run `scripts/validate_publication.py`.
+2. Manually review every potential secret or private-path match.
+3. Scan Git history if it exists.
+4. Confirm that private exercise data and unlicensed weights are excluded.
+5. When executable code is added, run its tests from a clean installation.
+6. Review the README, license, and security contact.
+7. Create a portfolio tag only after review.
 
-## Criterio de bloqueo
+## Blocking criteria
 
-Un hallazgo de token, video, base de datos, peso grande o documento confidencial
-bloquea el `push` hasta retirarlo y comprobar que no quedó en el historial.
+A token, video, database, large checkpoint, or confidential document blocks pushing until it is removed and its absence from history is verified.
